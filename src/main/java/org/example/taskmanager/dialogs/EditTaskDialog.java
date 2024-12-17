@@ -143,7 +143,7 @@ public class EditTaskDialog {
         grid.add(buttonPanel, 1, 6);
 
         // Устанавливаем сцену
-        stage.setScene(new Scene(grid, 400, 400));
+        stage.setScene(new Scene(grid, 600, 400));
         stage.showAndWait();
     }
 

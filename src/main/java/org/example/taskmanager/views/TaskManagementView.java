@@ -5,6 +5,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import org.example.taskmanager.dialogs.AddTaskDialog;
 import org.example.taskmanager.dialogs.EditTaskDialog;
 import org.example.taskmanager.models.Task;
@@ -12,6 +14,7 @@ import org.example.taskmanager.models.User;
 import org.example.taskmanager.repositories.TaskHistoryRepository;
 import org.example.taskmanager.repositories.TaskRepository;
 import org.example.taskmanager.repositories.UserRepository;
+
 
 import java.time.LocalDate;
 import java.util.List;
@@ -175,6 +178,12 @@ public class TaskManagementView extends BorderPane {
         Alert historyDialog = new Alert(Alert.AlertType.INFORMATION);
         historyDialog.setTitle("История задачи");
         historyDialog.setHeaderText("История и комментарии");
+        Image icon = new Image(getClass().getResourceAsStream("/icons/history.png")); // Укажите путь к вашей иконке
+        ImageView iconView = new ImageView(icon);
+        iconView.setFitHeight(48); // Размер иконки (высота)
+        iconView.setFitWidth(48);  // Размер иконки (ширина)
+        historyDialog.getDialogPane().setGraphic(iconView); // Меняем стандартную иконку
+
 
         StringBuilder content = new StringBuilder();
         for (String entry : history) {
@@ -197,6 +206,13 @@ public class TaskManagementView extends BorderPane {
         TextInputDialog commentDialog = new TextInputDialog();
         commentDialog.setHeaderText("Добавить комментарий");
         commentDialog.setContentText("Введите ваш комментарий:");
+
+        // Добавляем пользовательскую иконку
+        Image icon = new Image(getClass().getResourceAsStream("/icons/comment.png")); // Укажите ваш путь к иконке
+        ImageView iconView = new ImageView(icon);
+        iconView.setFitHeight(48); // Устанавливаем высоту иконки
+        iconView.setFitWidth(48);  // Устанавливаем ширину иконки
+        commentDialog.getDialogPane().setGraphic(iconView); // Устанавливаем иконку в диалог
 
         commentDialog.showAndWait().ifPresent(comment -> {
             // Проверяем, что был введен текст
@@ -224,8 +240,16 @@ public class TaskManagementView extends BorderPane {
 
     // Вспомогательный метод для показа сообщений
     private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new Alert(Alert.AlertType.INFORMATION); // Меняем тип на INFORMATION
+        alert.setHeaderText("Уведомление"); // Заголовок диалога
         alert.setContentText(message);
+        Image icon = new Image(getClass().getResourceAsStream("/icons/success.png")); // Укажите путь к вашей иконке
+        ImageView iconView = new ImageView(icon);
+        iconView.setFitHeight(48); // Размер иконки (высота)
+        iconView.setFitWidth(48);  // Размер иконки (ширина)
+
+        // Устанавливаем иконку в диалог
+        alert.getDialogPane().setGraphic(iconView); // Меняем стандартную иконку
         alert.showAndWait();
     }
 }

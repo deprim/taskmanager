@@ -131,7 +131,7 @@ public class AddTaskDialog {
         cancelButton.setOnAction(e -> stage.close());
 
         // Устанавливаем сцену и показываем окно
-        stage.setScene(new Scene(grid, 400, 400));
+        stage.setScene(new Scene(grid, 600, 400));
         stage.showAndWait();
     }
 

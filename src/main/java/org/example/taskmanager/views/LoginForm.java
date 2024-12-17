@@ -47,15 +47,17 @@ public class LoginForm {
 
             User user = userRepository.getUserByUsernameAndPassword(username, password);
             if (user != null) {
-                MainView mainView = new MainView(user.getId(), user.getRole()); // Передаём userId и роль
+                MainView mainView = new MainView(user.getId(), user.getRole(), user.getFirstName(), user.getLastName()); // Передаём userId и роль
                 mainView.start(stage); // Открываем панель соответствующей роли
             } else {
                 showAlert("Неверное имя пользователя или пароль");
             }
         });
 
+
+
         // Устанавливаем сцену
-        Scene scene = new Scene(grid, 400, 300);
+        Scene scene = new Scene(grid, 300, 150);
         stage.setScene(scene);
         stage.setTitle("Авторизация");
         stage.show();
