@@ -8,7 +8,9 @@ import javafx.scene.layout.VBox;
 import org.example.taskmanager.dialogs.AddTaskDialog;
 import org.example.taskmanager.dialogs.EditTaskDialog;
 import org.example.taskmanager.models.Task;
+import org.example.taskmanager.models.User;
 import org.example.taskmanager.repositories.TaskRepository;
+import org.example.taskmanager.repositories.UserRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -91,8 +93,13 @@ public class TaskManagementView extends BorderPane {
         TableColumn<Task, LocalDate> deadlineColumn = new TableColumn<>("Дедлайн");
         deadlineColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getDeadline()));
 
-        TableColumn<Task, Integer> assigneeColumn = new TableColumn<>("ID ответственного");
-        assigneeColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleObjectProperty<>(data.getValue().getAssigneeId()));
+        TableColumn<Task, String> assigneeColumn = new TableColumn<>("Ответственный");
+        assigneeColumn.setCellValueFactory(data -> {
+            int assigneeId = data.getValue().getAssigneeId();
+            User user = new UserRepository().getUserById(assigneeId); // Получение пользователя по ID
+            String assigneeName = (user != null) ? user.getFirstName() + " " + user.getLastName() : "N/A";
+            return new javafx.beans.property.SimpleStringProperty(assigneeName);
+        });
 
         TableColumn<Task, String> statusColumn = new TableColumn<>("Статус");
         statusColumn.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getStatus()));
