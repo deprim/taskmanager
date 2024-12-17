@@ -7,6 +7,7 @@ import java.sql.Statement;
 
 public class DatabaseManager {
 
+    private int test;
     private static final String DATABASE_URL = "jdbc:sqlite:task_manager.db";
 
     // Singleton instance of the connection
