@@ -123,7 +123,7 @@ public class AddTaskDialog {
             );
 
             // Сохранение в базу
-            taskRepository.createTask(newTask);
+            taskRepository.createTask(newTask, selectedUser.getId());
             stage.close();
         });
 

@@ -9,6 +9,7 @@ import org.example.taskmanager.dialogs.AddTaskDialog;
 import org.example.taskmanager.dialogs.EditTaskDialog;
 import org.example.taskmanager.models.Task;
 import org.example.taskmanager.models.User;
+import org.example.taskmanager.repositories.TaskHistoryRepository;
 import org.example.taskmanager.repositories.TaskRepository;
 import org.example.taskmanager.repositories.UserRepository;
 
@@ -51,13 +52,18 @@ public class TaskManagementView extends BorderPane {
         Button addTaskButton = new Button("Добавить задачу");
         Button editTaskButton = new Button("Редактировать задачу");
         Button deleteTaskButton = new Button("Удалить задачу");
+        Button historyButton = new Button("История");
+        Button addCommentButton = new Button("Добавить комментарий");
 
         addTaskButton.setOnAction(e -> addNewTask());
         editTaskButton.setOnAction(e -> editSelectedTask());
         deleteTaskButton.setOnAction(e -> deleteSelectedTask());
+        historyButton.setOnAction(e -> openTaskHistory());
+        addCommentButton.setOnAction(e -> addCommentToSelectedTask());
+
 
         // Панель с кнопками управления
-        HBox buttonBar = new HBox(10, addTaskButton, editTaskButton, deleteTaskButton);
+        HBox buttonBar = new HBox(10, addTaskButton, editTaskButton, deleteTaskButton, historyButton, addCommentButton);
         buttonBar.setPadding(new Insets(10));
         buttonBar.setStyle("-fx-background-color: #e0e0e0;");
 
@@ -152,6 +158,59 @@ public class TaskManagementView extends BorderPane {
         } else {
             showAlert("Выберите задачу для удаления.");
         }
+    }
+
+    private void openTaskHistory() {
+        Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
+        if (selectedTask == null) {
+            showAlert("Пожалуйста, выберите задачу для просмотра истории.");
+            return;
+        }
+
+        // Получить историю задач
+        TaskHistoryRepository historyRepository = new TaskHistoryRepository();
+        List<String> history = historyRepository.getTaskHistory(selectedTask.getId());
+
+        // Создать окно для отображения
+        Alert historyDialog = new Alert(Alert.AlertType.INFORMATION);
+        historyDialog.setTitle("История задачи");
+        historyDialog.setHeaderText("История и комментарии");
+
+        StringBuilder content = new StringBuilder();
+        for (String entry : history) {
+            content.append(entry).append("\n");
+        }
+
+        historyDialog.setContentText(content.toString());
+        historyDialog.showAndWait();
+    }
+
+    private void addCommentToSelectedTask() {
+        // Получаем выбранную задачу из таблицы
+        Task selectedTask = taskTable.getSelectionModel().getSelectedItem();
+        if (selectedTask == null) {
+            showAlert("Пожалуйста, выберите задачу для добавления комментария.");
+            return;
+        }
+
+        // Открываем диалоговое окно для ввода комментария
+        TextInputDialog commentDialog = new TextInputDialog();
+        commentDialog.setHeaderText("Добавить комментарий");
+        commentDialog.setContentText("Введите ваш комментарий:");
+
+        commentDialog.showAndWait().ifPresent(comment -> {
+            // Проверяем, что был введен текст
+            if (comment.trim().isEmpty()) {
+                showAlert("Комментарий не может быть пустым.");
+                return;
+            }
+
+            // Добавляем комментарий в историю задачи
+            TaskHistoryRepository historyRepository = new TaskHistoryRepository();
+            historyRepository.addTaskHistory(selectedTask.getId(), currentUserId, comment);
+
+            showAlert("Комментарий успешно добавлен!");
+        });
     }
 
     // Обновление данных в таблице в зависимости от текущего режима

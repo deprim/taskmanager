@@ -55,6 +55,19 @@ public class DatabaseManager {
             );
         """;
 
+            String createTaskHistoryTable = """
+CREATE TABLE IF NOT EXISTS task_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    comment TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES tasks (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+""";
+
+            statement.execute(createTaskHistoryTable);
             statement.execute(createUsersTable); // Create users table
             statement.execute(createTasksTable); // Create tasks table
 

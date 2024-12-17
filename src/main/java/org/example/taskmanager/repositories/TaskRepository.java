@@ -11,7 +11,7 @@ import java.util.List;
 public class TaskRepository {
 
     // Создание новой задачи
-    public void createTask(Task task) {
+    public void createTask(Task task, int creatorUserId) { // Добавили creatorUserId как параметр
         String sql = """
         INSERT INTO tasks (title, description, deadline, assignee_id, status, priority, category)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -19,7 +19,7 @@ public class TaskRepository {
 
         try (Connection connection = DatabaseManager.getConnection()) {
             connection.setAutoCommit(false); // Включаем транзакцию
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 // Установка значений
                 statement.setString(1, task.getTitle());
                 statement.setString(2, task.getDescription());
@@ -30,6 +30,19 @@ public class TaskRepository {
                 statement.setString(7, task.getCategory());
 
                 statement.executeUpdate(); // Выполнение запроса
+
+                // Получаем сгенерированный ID новой задачи
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int taskId = generatedKeys.getInt(1); // ID созданной задачи
+                        task.setId(taskId); // Устанавливаем ID созданной задачи в объект `task`
+
+                        // Создаем запись об истории
+                        TaskHistoryRepository historyRepository = new TaskHistoryRepository();
+                        historyRepository.addTaskHistory(taskId, creatorUserId, "Task created."); // Сохраняем событие истории
+                    }
+                }
+
                 connection.commit(); // Фиксация изменений
                 System.out.println("Task created successfully.");
             } catch (SQLException ex) {
